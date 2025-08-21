@@ -186,6 +186,8 @@ app.post('/optimize-route', async (req, res) => {
         routeModifiers.tollPasses = EZPASS_TOLL_PASSES;
       }
 
+      const departureISO = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+
       const body = {
         origin:       { address: from },
         destination:  { address: to },
@@ -195,7 +197,7 @@ app.post('/optimize-route', async (req, res) => {
         computeAlternativeRoutes: true,
         units: useMiles ? 'IMPERIAL' : 'METRIC',
         extraComputations: ['TOLLS'],
-        departureTime: new Date().toISOString(),
+        departureTime: departureISO,
         ...(Object.keys(routeModifiers).length ? { routeModifiers } : {})
       };
 
