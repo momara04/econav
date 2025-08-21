@@ -17,10 +17,13 @@ const EZPASS_TOLL_PASSES = [
 ];
 
 const app = express();
-app.use(cors());
+const allowedOrigin = process.env.CORS_ORIGIN || '*';
+app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.get('/health', (req, res) => res.send('ok'));
 
 // Route 1: optimize route and estimate fuel cost
 app.post('/optimize-route', async (req, res) => {
@@ -360,7 +363,7 @@ app.post('/optimize-route', async (req, res) => {
 
     routeCache.set(cacheKey, result);
     const duration = Date.now() - startTime;
-    console.log(`💾 Cache SET [${cacheKey}] (took ${duration} ms)`);
+    console.log(`Cache SET [${cacheKey}] (took ${duration} ms)`);
 
     res.json(result);
   } catch (error) {
@@ -570,5 +573,5 @@ app.get('/vehicle-years', async (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`API listening on port ${PORT} (CORS origin: ${process.env.CORS_ORIGIN || '*'})`);
 });

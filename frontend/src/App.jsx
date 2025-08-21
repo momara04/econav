@@ -48,6 +48,9 @@ const STATES = [
   { abbr: 'WI', name: 'Wisconsin' }, { abbr: 'WY', name: 'Wyoming' },
 ];
 
+// API base
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 // total cost helper (falls back to fuel-only if tolls absent)
 const num = (x) => (x === null || x === undefined ? NaN : parseFloat(x));
 const totalCostOf = (r) =>
@@ -185,7 +188,7 @@ function App() {
     setAutoFuelLoading(true);
     setAutoFuelPrice(null);
 
-    fetch(`http://localhost:3000/fuel-price?fuelType=${encodeURIComponent(form.fuelType)}`)
+    fetch(`${API_BASE}/fuel-price?fuelType=${encodeURIComponent(form.fuelType)}`)
       .then(r => r.json())
       .then(d => {
         if (cancelled) return;
@@ -212,7 +215,7 @@ function App() {
     setForm(prev => ({ ...prev, stops: prev.stops.filter((_, i) => i !== idx) }));
 
   useEffect(() => {
-    fetch('http://localhost:3000/vehicle-years')
+    fetch(`${API_BASE}/vehicle-years`)
       .then(res => res.json())
       .then(data => setAvailableYears(data.years))
       .catch(err => console.error('Failed to fetch years:', err));
@@ -224,7 +227,7 @@ function App() {
     setAvailableModels([]);
     setVehicle(prev => ({ ...prev, make: '', model: '' }));
 
-    fetch(`http://localhost:3000/vehicle-makes?year=${vehicle.year}`)
+    fetch(`${API_BASE}/vehicle-makes?year=${vehicle.year}`)
       .then(res => res.json())
       .then(data => setAvailableMakes(data.makes || []))
       .catch(err => console.error('Failed to fetch makes:', err));
@@ -235,7 +238,7 @@ function App() {
     setAvailableModels([]);
     setVehicle(prev => ({ ...prev, model: '' }));
 
-    fetch(`http://localhost:3000/vehicle-models?year=${vehicle.year}&make=${vehicle.make}`)
+    fetch(`${API_BASE}/vehicle-models?year=${vehicle.year}&make=${vehicle.make}`)
       .then(res => res.json())
       .then(data => setAvailableModels(data.models || []))
       .catch(err => console.error('Failed to fetch models:', err));
@@ -280,7 +283,7 @@ function App() {
 
     try {
       setError('');
-      const res = await fetch('http://localhost:3000/get-mpg', {
+      const res = await fetch(`${API_BASE}/get-mpg`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(vehicle)
@@ -336,7 +339,7 @@ function App() {
 
     try {
       console.log('Payload being sent to backend:', sendPayload);
-      const res = await fetch('http://localhost:3000/optimize-route', {
+      const res = await fetch(`${API_BASE}/optimize-route`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sendPayload),

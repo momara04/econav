@@ -1,13 +1,13 @@
 {
-  "name": "gas-cost-frontend",
+  "name": "econav-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@googlemaps/places": "^2.1.0",
