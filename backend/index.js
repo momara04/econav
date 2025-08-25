@@ -17,13 +17,40 @@ const EZPASS_TOLL_PASSES = [
 ];
 
 const app = express();
-const allowedOrigin = process.env.CORS_ORIGIN || '*';
-app.use(cors({ origin: allowedOrigin }));
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://econav.vercel.app',
+  // 'https://<your-preview>.vercel.app', // optional: a specific preview hostname
+  'https://econav-7av1.onrender.com'
+];
+
+app.use(cors({
+  origin(origin, cb) {
+    // allow non-browser tools or no-Origin requests (curl, server-to-server)
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+
+    try {
+      const { hostname, protocol } = new URL(origin);
+      const isHttps = protocol === 'https:';
+      const isVercelPreview = hostname.endsWith('.vercel.app');
+      if (isHttps && isVercelPreview) return cb(null, true);
+    } catch (_) { /* ignore */ }
+
+    return cb(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
 app.get('/health', (req, res) => res.send('ok'));
+
 
 // Route 1: optimize route and estimate fuel cost
 app.post('/optimize-route', async (req, res) => {

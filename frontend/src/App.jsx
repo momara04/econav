@@ -49,7 +49,10 @@ const STATES = [
 ];
 
 // API base
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const PROD_FALLBACK = 'https://econav-7av1.onrender.com';
+export const API_BASE =
+  (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '') ||
+  (import.meta.env.MODE === 'development' ? 'http://localhost:3000' : PROD_FALLBACK);
 
 // total cost helper (falls back to fuel-only if tolls absent)
 const num = (x) => (x === null || x === undefined ? NaN : parseFloat(x));
